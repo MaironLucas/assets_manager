@@ -9,7 +9,7 @@ final appRoutes = GoRouter(
     GoRoute(
       path: RoutePaths.homePath,
       builder: (context, state) {
-        return const HomePage();
+        return HomePage();
       },
     ),
   ],
