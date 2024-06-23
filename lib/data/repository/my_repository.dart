@@ -23,7 +23,7 @@ class MyRepository {
           final locationsMap = locations
               .map((location) => location as Map<String, dynamic>)
               .toList();
-          final locationsTree = <LocationResource>[];
+          final locationsTree = <CompanyResource>[];
 
           while (locationsMap.isNotEmpty) {
             final insertedLocations = <String>[];
@@ -32,18 +32,21 @@ class MyRepository {
                 locationsTree.add(
                   LocationResource.fromJson(location),
                 );
+                insertedLocations.add(location['id'] as String);
               } else {
                 var currentIndex = 0;
                 var hasInserted = false;
                 while (currentIndex < locationsTree.length && !hasInserted) {
                   hasInserted = addToLocationTree(
                     location,
-                    locationsTree[currentIndex],
+                    locationsTree[currentIndex] as LocationResource,
                   );
                   currentIndex++;
                 }
+                if (hasInserted) {
+                  insertedLocations.add(location['id'] as String);
+                }
               }
-              insertedLocations.add(location['id'] as String);
             }
             locationsMap.removeWhere(
               (location) => insertedLocations.contains(
@@ -86,10 +89,15 @@ class MyRepository {
             while (assetsMap.isNotEmpty) {
               final insertedAssets = <String>[];
               for (var asset in assetsMap) {
-                if (asset['parentId'] == null && asset['locationId'] == null){
-                  locationsTree.add(
-                    ComponentResource.fromJson(asset),
-                  );
+                if (asset['parentId'] == null && asset['locationId'] == null) {
+                  try {
+                    locationsTree.add(
+                      ComponentResource.fromJson(asset),
+                    );
+                  } catch (_) {
+                    // Empty catch cause in some cases the asset doesn't have a
+                    // sensorType neither parentId or locationId.
+                  }
                   insertedAssets.add(asset['id'] as String);
                 } else {
                   var currentIndex = 0;
@@ -101,11 +109,16 @@ class MyRepository {
                     );
                     currentIndex++;
                   }
-                  if (hasInserted){
+                  if (hasInserted) {
                     insertedAssets.add(asset['id'] as String);
                   }
                 }
               }
+              assetsMap.removeWhere(
+                (location) => insertedAssets.contains(
+                  location['id'],
+                ),
+              );
             }
 
             return locationsTree;
@@ -114,15 +127,23 @@ class MyRepository {
       );
 
   bool addAssetToTree(
-      Map<String, dynamic> assetToAdd,
-      CompanyResource currentResourceNode,
-      ) {
-    if (currentResourceNode is AssetResource && currentResourceNode.id == assetToAdd['parentId']) {
-      currentResourceNode.children.add(
-        AssetResource.fromJson(assetToAdd),
-      );
+    Map<String, dynamic> assetToAdd,
+    CompanyResource currentResourceNode,
+  ) {
+    if (currentResourceNode is AssetResource &&
+        currentResourceNode.id == assetToAdd['parentId']) {
+      if (assetToAdd['sensorType'] != null) {
+        currentResourceNode.children.add(
+          ComponentResource.fromJson(assetToAdd),
+        );
+      } else {
+        currentResourceNode.children.add(
+          AssetResource.fromJson(assetToAdd),
+        );
+      }
       return true;
-    } else if (currentResourceNode is LocationResource && currentResourceNode.id == assetToAdd['locationId']) {
+    } else if (currentResourceNode is LocationResource &&
+        currentResourceNode.id == assetToAdd['locationId']) {
       currentResourceNode.children.add(
         AssetResource.fromJson(assetToAdd),
       );

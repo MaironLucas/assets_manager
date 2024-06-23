@@ -10,6 +10,6 @@ void main() async {
   );
   final myRepo = MyRepository(myRDS: myRDS);
   print("Processing request");
-  final response = await myRepo.getLocations("662fd0fab3fd5656edb39af5");
+  final response = await myRepo.getAssetsTree("662fd100f990557384756e58");
   print(response);
 }
