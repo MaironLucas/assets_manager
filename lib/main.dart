@@ -2,6 +2,7 @@ import 'package:assets_manager/common/di.dart';
 import 'package:assets_manager/common/routing/routing.dart';
 import 'package:assets_manager/common/theme.dart';
 import 'package:assets_manager/common/util.dart';
+import 'package:assets_manager/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -21,6 +22,10 @@ class _MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Assets Manager',
       theme: theme.light(),
+      localizationsDelegates: const [
+        S.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
       routerConfig: appRoutes,
     );
   }

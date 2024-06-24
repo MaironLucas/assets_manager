@@ -1,14 +1,20 @@
-sealed class CompanyResource {}
-
-class LocationResource extends CompanyResource {
-  LocationResource({
-    required this.id,
+abstract class CompanyResource {
+  CompanyResource({
     required this.name,
-    required this.children,
+    required this.id,
   });
 
   final String id;
   final String name;
+}
+
+class LocationResource extends CompanyResource {
+  LocationResource({
+    required super.id,
+    required super.name,
+    required this.children,
+  });
+
   List<CompanyResource> children;
 
   factory LocationResource.fromJson(Map<String, dynamic> json) =>
@@ -21,13 +27,11 @@ class LocationResource extends CompanyResource {
 
 class AssetResource extends CompanyResource {
   AssetResource({
-    required this.id,
-    required this.name,
+    required super.id,
+    required super.name,
     required this.children,
   });
 
-  final String id;
-  final String name;
   final List<CompanyResource> children;
 
   factory AssetResource.fromJson(Map<String, dynamic> json) => AssetResource(
@@ -39,16 +43,14 @@ class AssetResource extends CompanyResource {
 
 class ComponentResource extends CompanyResource {
   ComponentResource({
-    required this.id,
-    required this.name,
+    required super.id,
+    required super.name,
     required this.sensorId,
     required this.sensorType,
     required this.status,
     required this.gatewayId,
   });
 
-  final String id;
-  final String name;
   final String sensorId;
   final String sensorType;
   final String status;

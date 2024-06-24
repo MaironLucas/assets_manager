@@ -1,0 +1,5 @@
+{
+  "@@locale": "en_US",
+  "errorMessage": "An error occurred while loading the page.\n Please try again.",
+  "errorTryAgainButton": "Try Again"
+}
