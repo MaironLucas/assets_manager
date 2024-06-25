@@ -23,10 +23,24 @@ class ResourceItem extends StatelessWidget {
           children: [
             Row(
               children: [
+                if (resource is MultiChildResource &&
+                    (resource as MultiChildResource).children.isNotEmpty)
+                  const Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 8,
+                  )
+                else
+                  const SizedBox(width: 8),
+                const SizedBox(
+                  width: 4,
+                ),
                 Image.asset(
                   switch (resource) {
-                    LocationResource() => 'assets/location.png',
-                    AssetResource() => 'assets/asset.png',
+                    MultiChildResource() =>
+                      (resource as MultiChildResource).type ==
+                              MultiChildResourceType.location
+                          ? 'assets/location.png'
+                          : 'assets/asset.png',
                     ComponentResource() => 'assets/component.png',
                     CompanyResource() => '',
                   },
@@ -42,15 +56,8 @@ class ResourceItem extends StatelessWidget {
                 ),
               ],
             ),
-            if (resource is LocationResource)
-              ...(resource as LocationResource).children.map(
-                    (child) => ResourceItem(
-                      layerPadding: layerPadding + _defaultLayerPadding,
-                      resource: child,
-                    ),
-                  ),
-            if (resource is AssetResource)
-              ...(resource as AssetResource).children.map(
+            if (resource is MultiChildResource)
+              ...(resource as MultiChildResource).children.map(
                     (child) => ResourceItem(
                       layerPadding: layerPadding + _defaultLayerPadding,
                       resource: child,

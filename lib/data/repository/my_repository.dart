@@ -30,7 +30,7 @@ class MyRepository {
             for (var location in locationsMap) {
               if (location['parentId'] == null) {
                 locationsTree.add(
-                  LocationResource.fromJson(location),
+                  MultiChildResource.fromJson(location, MultiChildResourceType.location),
                 );
                 insertedLocations.add(location['id'] as String);
               } else {
@@ -39,7 +39,7 @@ class MyRepository {
                 while (currentIndex < locationsTree.length && !hasInserted) {
                   hasInserted = addToLocationTree(
                     location,
-                    locationsTree[currentIndex] as LocationResource,
+                    locationsTree[currentIndex] as MultiChildResource,
                   );
                   currentIndex++;
                 }
@@ -61,16 +61,16 @@ class MyRepository {
 
   bool addToLocationTree(
     Map<String, dynamic> locationToAdd,
-    LocationResource currentLocationNode,
+      MultiChildResource currentLocationNode,
   ) {
     if (currentLocationNode.id == locationToAdd['parentId']) {
       currentLocationNode.children.add(
-        LocationResource.fromJson(locationToAdd),
+        MultiChildResource.fromJson(locationToAdd, MultiChildResourceType.location),
       );
       return true;
     } else {
       for (var child in currentLocationNode.children) {
-        if (addToLocationTree(locationToAdd, child as LocationResource)) {
+        if (addToLocationTree(locationToAdd, child as MultiChildResource)) {
           return true;
         }
       }
@@ -130,7 +130,7 @@ class MyRepository {
     Map<String, dynamic> assetToAdd,
     CompanyResource currentResourceNode,
   ) {
-    if (currentResourceNode is AssetResource &&
+    if (currentResourceNode is MultiChildResource &&
         currentResourceNode.id == assetToAdd['parentId']) {
       if (assetToAdd['sensorType'] != null) {
         currentResourceNode.children.add(
@@ -138,25 +138,18 @@ class MyRepository {
         );
       } else {
         currentResourceNode.children.add(
-          AssetResource.fromJson(assetToAdd),
+          MultiChildResource.fromJson(assetToAdd, MultiChildResourceType.asset),
         );
       }
       return true;
-    } else if (currentResourceNode is LocationResource &&
+    } else if (currentResourceNode is MultiChildResource &&
         currentResourceNode.id == assetToAdd['locationId']) {
       currentResourceNode.children.add(
-        AssetResource.fromJson(assetToAdd),
+        MultiChildResource.fromJson(assetToAdd, MultiChildResourceType.asset),
       );
       return true;
     } else {
-      if (currentResourceNode is AssetResource) {
-        for (var child in currentResourceNode.children) {
-          if (addAssetToTree(assetToAdd, child)) {
-            return true;
-          }
-        }
-      }
-      if (currentResourceNode is LocationResource) {
+      if (currentResourceNode is MultiChildResource) {
         for (var child in currentResourceNode.children) {
           if (addAssetToTree(assetToAdd, child)) {
             return true;

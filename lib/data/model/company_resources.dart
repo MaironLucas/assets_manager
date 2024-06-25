@@ -8,36 +8,28 @@ abstract class CompanyResource {
   final String name;
 }
 
-class LocationResource extends CompanyResource {
-  LocationResource({
+enum MultiChildResourceType {
+  location,
+  asset,
+}
+
+class MultiChildResource extends CompanyResource {
+  MultiChildResource({
     required super.id,
     required super.name,
+    required this.type,
     required this.children,
   });
 
   List<CompanyResource> children;
+  final MultiChildResourceType type;
 
-  factory LocationResource.fromJson(Map<String, dynamic> json) =>
-      LocationResource(
+  factory MultiChildResource.fromJson(Map<String, dynamic> json, MultiChildResourceType type) =>
+      MultiChildResource(
         id: json['id'],
         name: json['name'],
         children: [],
-      );
-}
-
-class AssetResource extends CompanyResource {
-  AssetResource({
-    required super.id,
-    required super.name,
-    required this.children,
-  });
-
-  final List<CompanyResource> children;
-
-  factory AssetResource.fromJson(Map<String, dynamic> json) => AssetResource(
-        id: json['id'],
-        name: json['name'],
-        children: [],
+        type: type,
       );
 }
 
