@@ -15,7 +15,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('Tractian'),
+          title: Text(
+            S.of(context).appName,
+          ),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),

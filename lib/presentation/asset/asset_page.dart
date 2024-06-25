@@ -22,7 +22,7 @@ class _AssetPageState extends State<AssetPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('Tractian'),
+          title: Text(S.of(context).assetsPageTitle),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
@@ -44,13 +44,20 @@ class _AssetPageState extends State<AssetPage> {
                     Success() => SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: state.resources
-                              .map(
-                                (resource) => ResourceItem(
-                                  resource: resource,
-                                ),
-                              )
-                              .toList(),
+                          children: state.resources.map(
+                            (resource) => ResourceItem(
+                                resource: resource,
+                                expandedResources: state.expandedResources,
+                                onExpandPressed: (String id, bool isExpanded) {
+                                  context.read<AssetBloc>().add(
+                                          ToggleExpand(
+                                            id,
+                                            !isExpanded,
+                                          ),
+                                        );
+                                },
+                              ),
+                          ).toList(),
                         ),
                       ),
                     Error() => Center(

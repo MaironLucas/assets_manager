@@ -50,6 +50,16 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
+  /// `Tractian`
+  String get appName {
+    return Intl.message(
+      'Tractian',
+      name: 'appName',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `An error occurred while loading the page.\n Please try again.`
   String get errorMessage {
     return Intl.message(
@@ -65,6 +75,16 @@ class S {
     return Intl.message(
       'Try Again',
       name: 'errorTryAgainButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Assets`
+  String get assetsPageTitle {
+    return Intl.message(
+      'Assets',
+      name: 'assetsPageTitle',
       desc: '',
       args: [],
     );

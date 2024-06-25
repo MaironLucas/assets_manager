@@ -1,5 +1,7 @@
 {
   "@@locale": "en_US",
+  "appName": "Tractian",
   "errorMessage": "An error occurred while loading the page.\n Please try again.",
-  "errorTryAgainButton": "Try Again"
+  "errorTryAgainButton": "Try Again",
+  "assetsPageTitle": "Assets"
 }

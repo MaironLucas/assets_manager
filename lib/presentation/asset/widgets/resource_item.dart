@@ -5,29 +5,40 @@ class ResourceItem extends StatelessWidget {
   const ResourceItem({
     this.layerPadding = _defaultLayerPadding,
     required this.resource,
+    required this.onExpandPressed,
+    required this.expandedResources,
     super.key,
   });
 
   final double layerPadding;
   final CompanyResource resource;
+  final List<String> expandedResources;
+  final void Function(String id, bool isExpanded) onExpandPressed;
 
   static const double _defaultLayerPadding = 6;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: EdgeInsets.only(
-          left: layerPadding,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+  Widget build(BuildContext context) {
+    final isExpanded = expandedResources.contains(resource.id);
+    return Container(
+      padding: EdgeInsets.only(
+        left: layerPadding,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => onExpandPressed(resource.id, isExpanded),
+            child: Row(
               children: [
                 if (resource is MultiChildResource &&
                     (resource as MultiChildResource).children.isNotEmpty)
-                  const Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 8,
+                  Transform.rotate(
+                    angle: isExpanded ? 3.14 : 0,
+                    child: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 8,
+                    ),
                   )
                 else
                   const SizedBox(width: 8),
@@ -56,14 +67,18 @@ class ResourceItem extends StatelessWidget {
                 ),
               ],
             ),
-            if (resource is MultiChildResource)
-              ...(resource as MultiChildResource).children.map(
-                    (child) => ResourceItem(
-                      layerPadding: layerPadding + _defaultLayerPadding,
-                      resource: child,
-                    ),
-                  ),
-          ],
-        ),
-      );
+          ),
+          if (resource is MultiChildResource && isExpanded)
+            ...(resource as MultiChildResource).children.map(
+              (child) => ResourceItem(
+                  layerPadding: layerPadding + _defaultLayerPadding,
+                  resource: child,
+                  onExpandPressed: onExpandPressed,
+                  expandedResources: expandedResources,
+                ),
+            ),
+        ],
+      ),
+    );
+  }
 }
