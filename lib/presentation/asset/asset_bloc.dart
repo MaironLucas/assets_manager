@@ -26,6 +26,12 @@ class ToggleExpand extends AssetEvent {
   final bool isExpanded;
 }
 
+class Search extends AssetEvent {
+  Search(this.searchTerm);
+
+  final String searchTerm;
+}
+
 class AssetBloc extends Bloc<AssetEvent, AssetState> {
   AssetBloc({
     required MyRepository repository,
@@ -35,6 +41,7 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
         super(Loading()) {
     on<GetResources>(_onGetResources);
     on<ToggleExpand>(_onToggleExpand);
+    on<Search>(_search);
   }
 
   final MyRepository _repository;
@@ -51,7 +58,7 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
     try {
       final resources = await _repository.getAssetsTree(_companyId);
       _allResources = resources;
-      _filteredResources = List.of(resources);
+      _filteredResources = List.from(resources);
       emit(Success(_filteredResources, _expandedResources));
     } catch (_) {
       emit(Error());
@@ -59,14 +66,87 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
   }
 
   Future<void> _onToggleExpand(
-      ToggleExpand event,
-      Emitter<AssetState> emit,
-      ) async {
+    ToggleExpand event,
+    Emitter<AssetState> emit,
+  ) async {
     if (event.isExpanded) {
       _expandedResources.add(event.resourceId);
     } else {
       _expandedResources.remove(event.resourceId);
     }
     emit(Success(_filteredResources, _expandedResources));
+  }
+
+  Future<void> _search(
+    Search event,
+    Emitter<AssetState> emit,
+  ) async {
+    final searchTerm = event.searchTerm.toLowerCase();
+    _filteredResources = List.from(_allResources);
+    emit(Loading());
+    if (event.searchTerm.isNotEmpty) {
+      final resourcesToRemove = <String>[];
+      for (final resource in _filteredResources) {
+        if (resource is ComponentResource) {
+          if (!resource.name.toLowerCase().contains(searchTerm)) {
+            resourcesToRemove.add(resource.id);
+          }
+        } else {
+          final multiChildResource = resource as MultiChildResource;
+          if (!multiChildResource.name.toLowerCase().contains(searchTerm)) {
+            var shouldKeepResource = false;
+            final childrenToRemove = <String>[];
+            for (final child in multiChildResource.children) {
+              if (!child.name.toLowerCase().contains(searchTerm)) {
+                final shouldKeep = iterateOnTree(searchTerm, child);
+                if (!shouldKeep) {
+                  childrenToRemove.add(child.id);
+                } else {
+                  shouldKeepResource = true;
+                }
+              } else {
+                shouldKeepResource = true;
+              }
+            }
+            if (!shouldKeepResource) {
+              resourcesToRemove.add(multiChildResource.id);
+            } else {
+              multiChildResource.children.removeWhere(
+                (child) => childrenToRemove.contains(child.id),
+              );
+            }
+          }
+        }
+      }
+      _filteredResources.removeWhere(
+        (resource) => resourcesToRemove.contains(resource.id),
+      );
+    }
+    emit(Success(_filteredResources, _expandedResources));
+  }
+
+  bool iterateOnTree(String searchTerm, CompanyResource currentNode) {
+    if (currentNode is ComponentResource) {
+      return false;
+    }
+    final multiChildResource = currentNode as MultiChildResource;
+    var hasANodeToKeep = false;
+    final childrenToRemove = <String>[];
+    for (final child in multiChildResource.children) {
+      if (child.name.toLowerCase().contains(searchTerm)) {
+        hasANodeToKeep = true;
+      } else {
+        final shouldKeep = iterateOnTree(searchTerm, child);
+        if (!shouldKeep) {
+          childrenToRemove.add(child.id);
+        } else {
+          hasANodeToKeep = true;
+        }
+      }
+    }
+    multiChildResource.children.removeWhere(
+      (child) => childrenToRemove.contains(child.id),
+    );
+    return hasANodeToKeep;
   }
 }

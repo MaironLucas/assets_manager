@@ -1,6 +1,7 @@
 import 'package:assets_manager/data/repository/my_repository.dart';
 import 'package:assets_manager/generated/l10n.dart';
 import 'package:assets_manager/presentation/asset/asset_bloc.dart';
+import 'package:assets_manager/presentation/asset/widgets/my_text_field.dart';
 import 'package:assets_manager/presentation/asset/widgets/resource_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,9 @@ class AssetPage extends StatefulWidget {
 }
 
 class _AssetPageState extends State<AssetPage> {
+  final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -33,47 +37,69 @@ class _AssetPageState extends State<AssetPage> {
           )..add(
               GetResources(),
             ),
-          child: Column(
-            children: [
-              Expanded(
-                child: BlocBuilder<AssetBloc, AssetState>(
-                  builder: (context, state) => switch (state) {
-                    Loading() => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    Success() => SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: state.resources.map(
-                            (resource) => ResourceItem(
-                                resource: resource,
-                                expandedResources: state.expandedResources,
-                                onExpandPressed: (String id, bool isExpanded) {
-                                  context.read<AssetBloc>().add(
-                                          ToggleExpand(
-                                            id,
-                                            !isExpanded,
-                                          ),
-                                        );
-                                },
-                              ),
-                          ).toList(),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(
+                    16,
+                  ),
+                  child: Builder(
+                    builder: (context) {
+                      return MyTextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                        onSubmitted: (searchTerm) => context.read<AssetBloc>().add(
+                              Search(searchTerm),
+                            ),
+                      );
+                    }
+                  ),
+                ),
+                Expanded(
+                  child: BlocBuilder<AssetBloc, AssetState>(
+                    builder: (context, state) => switch (state) {
+                      Loading() => const Center(
+                          child: CircularProgressIndicator(),
                         ),
-                      ),
-                    Error() => Center(
-                        child: InkWell(
-                          onTap: () => context.read<AssetBloc>().add(
-                                GetResources(),
-                              ),
-                          child: Text(
-                            S.of(context).errorTryAgainButton,
+                      Success() => SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: state.resources
+                                .map(
+                                  (resource) => ResourceItem(
+                                    resource: resource,
+                                    expandedResources: state.expandedResources,
+                                    onExpandPressed:
+                                        (String id, bool isExpanded) {
+                                      context.read<AssetBloc>().add(
+                                            ToggleExpand(
+                                              id,
+                                              !isExpanded,
+                                            ),
+                                          );
+                                    },
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ),
-                      ),
-                  },
+                      Error() => Center(
+                          child: InkWell(
+                            onTap: () => context.read<AssetBloc>().add(
+                                  GetResources(),
+                                ),
+                            child: Text(
+                              S.of(context).errorTryAgainButton,
+                            ),
+                          ),
+                        ),
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );

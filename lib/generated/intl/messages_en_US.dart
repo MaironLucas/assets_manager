@@ -26,6 +26,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "assetsPageTitle": MessageLookupByLibrary.simpleMessage("Assets"),
         "errorMessage": MessageLookupByLibrary.simpleMessage(
             "An error occurred while loading the page.\n Please try again."),
-        "errorTryAgainButton": MessageLookupByLibrary.simpleMessage("Try Again")
+        "errorTryAgainButton":
+            MessageLookupByLibrary.simpleMessage("Try Again"),
+        "textFieldHint":
+            MessageLookupByLibrary.simpleMessage("Busque ativo ou local")
       };
 }

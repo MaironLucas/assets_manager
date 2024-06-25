@@ -3,5 +3,6 @@
   "appName": "Tractian",
   "errorMessage": "An error occurred while loading the page.\n Please try again.",
   "errorTryAgainButton": "Try Again",
-  "assetsPageTitle": "Assets"
+  "assetsPageTitle": "Assets",
+  "textFieldHint": "Busque ativo ou local"
 }

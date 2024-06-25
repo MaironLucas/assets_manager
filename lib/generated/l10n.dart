@@ -89,6 +89,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Busque ativo ou local`
+  String get textFieldHint {
+    return Intl.message(
+      'Busque ativo ou local',
+      name: 'textFieldHint',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
