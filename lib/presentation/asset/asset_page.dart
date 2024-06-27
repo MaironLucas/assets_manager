@@ -1,6 +1,7 @@
 import 'package:assets_manager/data/repository/my_repository.dart';
 import 'package:assets_manager/generated/l10n.dart';
 import 'package:assets_manager/presentation/asset/asset_bloc.dart';
+import 'package:assets_manager/presentation/asset/widgets/filter_button.dart';
 import 'package:assets_manager/presentation/asset/widgets/my_text_field.dart';
 import 'package:assets_manager/presentation/asset/widgets/resource_item.dart';
 import 'package:flutter/material.dart';
@@ -45,16 +46,68 @@ class _AssetPageState extends State<AssetPage> {
                   padding: const EdgeInsets.all(
                     16,
                   ),
-                  child: Builder(
-                    builder: (context) {
-                      return MyTextField(
-                        controller: _controller,
-                        focusNode: _focusNode,
-                        onSubmitted: (searchTerm) => context.read<AssetBloc>().add(
-                              Search(searchTerm),
-                            ),
-                      );
-                    }
+                  child: Builder(builder: (context) {
+                    return MyTextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      onSubmitted: (searchTerm) =>
+                          context.read<AssetBloc>().add(
+                                Filter(
+                                  searchTerm: searchTerm,
+                                ),
+                              ),
+                    );
+                  }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    bottom: 8,
+                  ),
+                  child: BlocBuilder<AssetBloc, AssetState>(
+                    builder: (context, state) => state is Success
+                        ? Row(
+                            children: [
+                              FilterButton(
+                                isEnabled:
+                                    state.currentFilter == FilterType.energy,
+                                text: S.of(context).energyFilter,
+                                icon: Icons.bolt,
+                                onPressed: () {
+                                  context.read<AssetBloc>().add(
+                                        Filter(
+                                          searchTerm: _controller.text,
+                                          newFilter: state.currentFilter ==
+                                                  FilterType.energy
+                                              ? FilterType.none
+                                              : FilterType.energy,
+                                        ),
+                                      );
+                                },
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              FilterButton(
+                                isEnabled:
+                                    state.currentFilter == FilterType.critical,
+                                text: S.of(context).criticalFilter,
+                                icon: Icons.info,
+                                onPressed: () {
+                                  context.read<AssetBloc>().add(
+                                        Filter(
+                                          searchTerm: _controller.text,
+                                          newFilter: state.currentFilter ==
+                                                  FilterType.critical
+                                              ? FilterType.none
+                                              : FilterType.critical,
+                                        ),
+                                      );
+                                },
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink(),
                   ),
                 ),
                 Expanded(

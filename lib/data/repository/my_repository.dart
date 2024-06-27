@@ -30,7 +30,8 @@ class MyRepository {
             for (var location in locationsMap) {
               if (location['parentId'] == null) {
                 locationsTree.add(
-                  MultiChildResource.fromJson(location, MultiChildResourceType.location),
+                  MultiChildResource.fromJson(
+                      location, MultiChildResourceType.location),
                 );
                 insertedLocations.add(location['id'] as String);
               } else {
@@ -61,11 +62,12 @@ class MyRepository {
 
   bool addToLocationTree(
     Map<String, dynamic> locationToAdd,
-      MultiChildResource currentLocationNode,
+    MultiChildResource currentLocationNode,
   ) {
     if (currentLocationNode.id == locationToAdd['parentId']) {
       currentLocationNode.children.add(
-        MultiChildResource.fromJson(locationToAdd, MultiChildResourceType.location),
+        MultiChildResource.fromJson(
+            locationToAdd, MultiChildResourceType.location),
       );
       return true;
     } else {
@@ -130,33 +132,60 @@ class MyRepository {
     Map<String, dynamic> assetToAdd,
     CompanyResource currentResourceNode,
   ) {
-    if (currentResourceNode is MultiChildResource &&
-        currentResourceNode.id == assetToAdd['parentId']) {
-      if (assetToAdd['sensorType'] != null) {
-        currentResourceNode.children.add(
-          ComponentResource.fromJson(assetToAdd),
-        );
-      } else {
-        currentResourceNode.children.add(
-          MultiChildResource.fromJson(assetToAdd, MultiChildResourceType.asset),
-        );
-      }
+    if ((currentResourceNode.id == assetToAdd['parentId'] ||
+            currentResourceNode.id == assetToAdd['locationId']) &&
+        assetToAdd['sensorType'] != null) {
+      (currentResourceNode as MultiChildResource).children.add(
+            ComponentResource.fromJson(assetToAdd),
+          );
       return true;
-    } else if (currentResourceNode is MultiChildResource &&
-        currentResourceNode.id == assetToAdd['locationId']) {
-      currentResourceNode.children.add(
-        MultiChildResource.fromJson(assetToAdd, MultiChildResourceType.asset),
-      );
+    }
+    if ((assetToAdd['locationId'] == currentResourceNode.id ||
+            assetToAdd['parentId'] == currentResourceNode.id) &&
+        assetToAdd['sensorId'] == null) {
+      (currentResourceNode as MultiChildResource).children.add(
+            MultiChildResource.fromJson(
+                assetToAdd, MultiChildResourceType.asset),
+          );
       return true;
-    } else {
-      if (currentResourceNode is MultiChildResource) {
-        for (var child in currentResourceNode.children) {
-          if (addAssetToTree(assetToAdd, child)) {
-            return true;
-          }
+    }
+    if (currentResourceNode is MultiChildResource) {
+      for (var child in currentResourceNode.children) {
+        if (addAssetToTree(assetToAdd, child)) {
+          return true;
         }
       }
-      return false;
     }
+    return false;
+    //   if (currentResourceNode is MultiChildResource &&
+    //       currentResourceNode.type == MultiChildResourceType.asset &&
+    //       currentResourceNode.id == assetToAdd['parentId']) {
+    //     if (assetToAdd['sensorType'] != null) {
+    //       currentResourceNode.children.add(
+    //         ComponentResource.fromJson(assetToAdd),
+    //       );
+    //     } else {
+    //       currentResourceNode.children.add(
+    //         MultiChildResource.fromJson(assetToAdd, MultiChildResourceType.asset),
+    //       );
+    //     }
+    //     return true;
+    //   } else if (currentResourceNode is MultiChildResource &&
+    //       currentResourceNode.type == MultiChildResourceType.location &&
+    //       currentResourceNode.id == assetToAdd['locationId']) {
+    //     currentResourceNode.children.add(
+    //       MultiChildResource.fromJson(assetToAdd, MultiChildResourceType.asset),
+    //     );
+    //     return true;
+    //   } else {
+    //     if (currentResourceNode is MultiChildResource) {
+    //       for (var child in currentResourceNode.children) {
+    //         if (addAssetToTree(assetToAdd, child)) {
+    //           return true;
+    //         }
+    //       }
+    //     }
+    //     return false;
+    //   }
   }
 }

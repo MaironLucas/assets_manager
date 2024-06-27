@@ -99,6 +99,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Sensor de Energia`
+  String get energyFilter {
+    return Intl.message(
+      'Sensor de Energia',
+      name: 'energyFilter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Crítico`
+  String get criticalFilter {
+    return Intl.message(
+      'Crítico',
+      name: 'criticalFilter',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

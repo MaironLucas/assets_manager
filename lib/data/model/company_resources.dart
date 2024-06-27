@@ -37,24 +37,18 @@ class ComponentResource extends CompanyResource {
   ComponentResource({
     required super.id,
     required super.name,
-    required this.sensorId,
-    required this.sensorType,
-    required this.status,
-    required this.gatewayId,
+    required this.isEnergySensor,
+    required this.hasCriticalStatus,
   });
 
-  final String sensorId;
-  final String sensorType;
-  final String status;
-  final String gatewayId;
+  final bool isEnergySensor;
+  final bool hasCriticalStatus;
 
   factory ComponentResource.fromJson(Map<String, dynamic> json) =>
       ComponentResource(
         id: json['id'],
         name: json['name'],
-        sensorId: json['sensorId'],
-        sensorType: json['sensorType'],
-        status: json['status'],
-        gatewayId: json['gatewayId'],
+        isEnergySensor: json['sensorType'] == 'energy',
+        hasCriticalStatus: json['status'] == 'alert',
       );
 }

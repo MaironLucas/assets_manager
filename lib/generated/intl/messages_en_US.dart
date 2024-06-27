@@ -24,6 +24,9 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appName": MessageLookupByLibrary.simpleMessage("Tractian"),
         "assetsPageTitle": MessageLookupByLibrary.simpleMessage("Assets"),
+        "criticalFilter": MessageLookupByLibrary.simpleMessage("Crítico"),
+        "energyFilter":
+            MessageLookupByLibrary.simpleMessage("Sensor de Energia"),
         "errorMessage": MessageLookupByLibrary.simpleMessage(
             "An error occurred while loading the page.\n Please try again."),
         "errorTryAgainButton":

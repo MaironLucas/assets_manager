@@ -4,5 +4,7 @@
   "errorMessage": "An error occurred while loading the page.\n Please try again.",
   "errorTryAgainButton": "Try Again",
   "assetsPageTitle": "Assets",
-  "textFieldHint": "Busque ativo ou local"
+  "textFieldHint": "Busque ativo ou local",
+  "energyFilter": "Sensor de Energia",
+  "criticalFilter": "Crítico"
 }

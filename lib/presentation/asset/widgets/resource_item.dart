@@ -65,18 +65,35 @@ class ResourceItem extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(
+                  width: 4,
+                ),
+                if (resource is ComponentResource &&
+                    (resource as ComponentResource).isEnergySensor)
+                  const Icon(
+                    Icons.bolt,
+                    color: Colors.green,
+                    size: 12,
+                  ),
+                if (resource is ComponentResource &&
+                    (resource as ComponentResource).hasCriticalStatus)
+                  const Icon(
+                    Icons.warning,
+                    size: 12,
+                    color: Colors.red,
+                  )
               ],
             ),
           ),
           if (resource is MultiChildResource && isExpanded)
             ...(resource as MultiChildResource).children.map(
-              (child) => ResourceItem(
-                  layerPadding: layerPadding + _defaultLayerPadding,
-                  resource: child,
-                  onExpandPressed: onExpandPressed,
-                  expandedResources: expandedResources,
+                  (child) => ResourceItem(
+                    layerPadding: layerPadding + _defaultLayerPadding,
+                    resource: child,
+                    onExpandPressed: onExpandPressed,
+                    expandedResources: expandedResources,
+                  ),
                 ),
-            ),
         ],
       ),
     );
