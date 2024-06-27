@@ -55,7 +55,7 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
   final String _companyId;
   List<CompanyResource> _allResources = [];
   List<CompanyResource> _filteredResources = [];
-  final List<String> _expandedResources = [];
+  List<String> _expandedResources = [];
   FilterType? _currentFilter;
 
   Future<void> _onGetResources(
@@ -94,6 +94,7 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
     _currentFilter = event.newFilter == FilterType.none
         ? null
         : event.newFilter ?? _currentFilter;
+    _expandedResources = [];
     emit(Loading());
     if (event.searchTerm.isNotEmpty || _currentFilter != null) {
       final resourcesToRemove = <String>[];
@@ -124,6 +125,7 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
           if (multiChildResource.name.toLowerCase().contains(searchTerm) &&
               searchTerm.isNotEmpty &&
               _currentFilter == null) {
+            _expandedResources.add(multiChildResource.id);
             continue;
           } else {
             final childrenToRemove = <String>[];
@@ -136,6 +138,7 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
             if (childrenToRemove.length == multiChildResource.children.length) {
               resourcesToRemove.add(multiChildResource.id);
             } else {
+              _expandedResources.add(multiChildResource.id);
               multiChildResource.children.removeWhere(
                 (child) => childrenToRemove.contains(child.id),
               );
@@ -170,6 +173,7 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
     if (multiChildResource.name.toLowerCase().contains(searchTerm) &&
         searchTerm.isNotEmpty &&
         _currentFilter == null) {
+      _expandedResources.add(multiChildResource.id);
       return true;
     }
     // children that has not a child that matches the search term or current
@@ -186,6 +190,7 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
     if (childrenToRemove.length == multiChildResource.children.length) {
       return false;
     } else {
+      _expandedResources.add(multiChildResource.id);
       multiChildResource.children.removeWhere(
         (child) => childrenToRemove.contains(child.id),
       );

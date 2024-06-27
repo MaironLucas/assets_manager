@@ -1,3 +1,4 @@
+import 'package:assets_manager/common/util.dart';
 import 'package:assets_manager/data/repository/my_repository.dart';
 import 'package:assets_manager/generated/l10n.dart';
 import 'package:assets_manager/presentation/asset/asset_bloc.dart';
@@ -108,6 +109,9 @@ class _AssetPageState extends State<AssetPage> {
                           )
                         : const SizedBox.shrink(),
                   ),
+                ),
+                Divider(
+                  color: context.colorScheme.tertiary,
                 ),
                 Expanded(
                   child: BlocBuilder<AssetBloc, AssetState>(
