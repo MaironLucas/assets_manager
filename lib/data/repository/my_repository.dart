@@ -157,35 +157,5 @@ class MyRepository {
       }
     }
     return false;
-    //   if (currentResourceNode is MultiChildResource &&
-    //       currentResourceNode.type == MultiChildResourceType.asset &&
-    //       currentResourceNode.id == assetToAdd['parentId']) {
-    //     if (assetToAdd['sensorType'] != null) {
-    //       currentResourceNode.children.add(
-    //         ComponentResource.fromJson(assetToAdd),
-    //       );
-    //     } else {
-    //       currentResourceNode.children.add(
-    //         MultiChildResource.fromJson(assetToAdd, MultiChildResourceType.asset),
-    //       );
-    //     }
-    //     return true;
-    //   } else if (currentResourceNode is MultiChildResource &&
-    //       currentResourceNode.type == MultiChildResourceType.location &&
-    //       currentResourceNode.id == assetToAdd['locationId']) {
-    //     currentResourceNode.children.add(
-    //       MultiChildResource.fromJson(assetToAdd, MultiChildResourceType.asset),
-    //     );
-    //     return true;
-    //   } else {
-    //     if (currentResourceNode is MultiChildResource) {
-    //       for (var child in currentResourceNode.children) {
-    //         if (addAssetToTree(assetToAdd, child)) {
-    //           return true;
-    //         }
-    //       }
-    //     }
-    //     return false;
-    //   }
   }
 }

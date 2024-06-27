@@ -1,3 +1,4 @@
+import 'package:assets_manager/common/util.dart';
 import 'package:assets_manager/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -14,35 +15,35 @@ class MyTextField extends StatelessWidget {
   final FocusNode focusNode;
 
   @override
-  Widget build(BuildContext context) => Container(
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(
-            8,
-          ),
+  Widget build(BuildContext context) => TextField(
+    controller: controller,
+    focusNode: focusNode,
+    style: context.textTheme.bodyMedium,
+    decoration: InputDecoration(
+      isDense: true,
+      fillColor: Colors.grey.withOpacity(0.1),
+      filled: true,
+      prefixIcon: Icon(
+        Icons.search,
+        color: Colors.grey.withOpacity(0.4),
+      ),
+      hintText: S.of(context).textFieldHint,
+      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.4)),
+      border: const OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: context.colorScheme.primary,
         ),
-        child: TextField(
-          style: const TextStyle(
-            fontSize: 14,
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            hintText: S.of(context).textFieldHint,
-            prefixIcon:const  Icon(
-              Icons.search,
-              size: 16,
-            ),
-            contentPadding:const  EdgeInsets.symmetric(
-              horizontal: 4,
-            ),
-            enabledBorder:const  OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.transparent,
-              ),
-            ),
-          ),
-          onSubmitted: onSubmitted,
-        ),
-      );
+        borderRadius:const  BorderRadius.all(Radius.circular(4.0)),
+      ),
+      focusedErrorBorder: const OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+      ),
+    ),
+    onSubmitted: onSubmitted,
+  );
 }

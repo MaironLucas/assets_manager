@@ -4,6 +4,7 @@ import 'package:assets_manager/presentation/asset/asset_bloc.dart';
 import 'package:assets_manager/presentation/asset/widgets/filter_button.dart';
 import 'package:assets_manager/presentation/asset/widgets/my_text_field.dart';
 import 'package:assets_manager/presentation/asset/widgets/resource_item.dart';
+import 'package:assets_manager/presentation/common/my_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -26,10 +27,8 @@ class _AssetPageState extends State<AssetPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(S.of(context).assetsPageTitle),
-          centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.secondary,
+        appBar: MyAppBar(
+          title: S.of(context).assetsPageTitle,
         ),
         body: BlocProvider(
           create: (_) => AssetBloc(

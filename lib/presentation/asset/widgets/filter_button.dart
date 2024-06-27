@@ -1,3 +1,4 @@
+import 'package:assets_manager/common/util.dart';
 import 'package:flutter/material.dart';
 
 class FilterButton extends StatelessWidget {
@@ -16,21 +17,19 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-    onTap: onPressed,
-    borderRadius: BorderRadius.circular(
-      8,
-    ),
-    child: Container(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(
+          8,
+        ),
+        child: Container(
           height: 40,
           decoration: BoxDecoration(
-            color: isEnabled
-                ? Theme.of(context).colorScheme.secondary
-                : Colors.transparent,
+            color: isEnabled ? context.colorScheme.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(
               8,
             ),
             border: Border.all(
-              color: Colors.grey,
+              color: context.colorScheme.tertiary,
               width: 1,
             ),
           ),
@@ -43,7 +42,9 @@ class FilterButton extends StatelessWidget {
               children: [
                 Icon(
                   icon,
-                  color: isEnabled ? Colors.white : Colors.black,
+                  color: isEnabled
+                      ? context.colorScheme.onPrimary
+                      : context.colorScheme.primaryContainer,
                 ),
                 const SizedBox(
                   width: 4,
@@ -51,12 +52,14 @@ class FilterButton extends StatelessWidget {
                 Text(
                   text,
                   style: TextStyle(
-                    color: isEnabled ? Colors.white : Colors.black,
+                    color: isEnabled
+                        ? context.colorScheme.onPrimary
+                        : context.colorScheme.primaryContainer,
                   ),
                 ),
               ],
             ),
           ),
         ),
-  );
+      );
 }

@@ -1,3 +1,4 @@
+import 'package:assets_manager/common/util.dart';
 import 'package:assets_manager/data/model/company_resources.dart';
 import 'package:flutter/material.dart';
 
@@ -64,6 +65,7 @@ class ResourceItem extends StatelessWidget {
                   resource.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodyMedium,
                 ),
                 const SizedBox(
                   width: 4,
