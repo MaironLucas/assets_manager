@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:assets_manager/data/model/company.dart';
 import 'package:assets_manager/data/model/company_resources.dart';
 import 'package:assets_manager/data/remote/my_rds.dart';
@@ -17,62 +19,79 @@ class MyRepository {
             .toList(),
       );
 
-  Future<List<CompanyResource>> getLocations(String companyId) =>
-      _myRDS.getLocations(companyId).then(
-        (locations) {
-          final locationsMap = locations
-              .map((location) => location as Map<String, dynamic>)
-              .toList();
-          final locationsTree = <CompanyResource>[];
+  Future<(List<CompanyResource>, SplayTreeMap<String, MultiChildResource>)>
+      getLocations(
+    String companyId,
+  ) =>
+          _myRDS.getLocations(companyId).then(
+            (locations) {
+              final locationsMap = locations
+                  .map((location) => location as Map<String, dynamic>)
+                  .toList();
+              final locationsLookupMap =
+                  SplayTreeMap<String, MultiChildResource>();
+              final locationsTree = <CompanyResource>[];
 
-          while (locationsMap.isNotEmpty) {
-            final insertedLocations = <String>[];
-            for (var location in locationsMap) {
-              if (location['parentId'] == null) {
-                locationsTree.add(
-                  MultiChildResource.fromJson(
-                      location, MultiChildResourceType.location),
+              while (locationsMap.isNotEmpty) {
+                final insertedLocations = <String>[];
+                for (var location in locationsMap) {
+                  if (location['parentId'] == null) {
+                    final locationNode = MultiChildResource.fromJson(
+                      location,
+                      MultiChildResourceType.location,
+                    );
+                    locationsTree.add(
+                      locationNode,
+                    );
+                    locationsLookupMap[locationNode.id] = locationNode;
+                    insertedLocations.add(location['id'] as String);
+                  } else {
+                    var currentIndex = 0;
+                    var hasInserted = false;
+                    while (
+                        currentIndex < locationsTree.length && !hasInserted) {
+                      hasInserted = addToLocationTree(
+                        location,
+                        locationsTree[currentIndex] as MultiChildResource,
+                        locationsLookupMap,
+                      );
+                      currentIndex++;
+                    }
+                    if (hasInserted) {
+                      insertedLocations.add(location['id'] as String);
+                    }
+                  }
+                }
+                locationsMap.removeWhere(
+                  (location) => insertedLocations.contains(
+                    location['id'],
+                  ),
                 );
-                insertedLocations.add(location['id'] as String);
-              } else {
-                var currentIndex = 0;
-                var hasInserted = false;
-                while (currentIndex < locationsTree.length && !hasInserted) {
-                  hasInserted = addToLocationTree(
-                    location,
-                    locationsTree[currentIndex] as MultiChildResource,
-                  );
-                  currentIndex++;
-                }
-                if (hasInserted) {
-                  insertedLocations.add(location['id'] as String);
-                }
               }
-            }
-            locationsMap.removeWhere(
-              (location) => insertedLocations.contains(
-                location['id'],
-              ),
-            );
-          }
 
-          return locationsTree;
-        },
-      );
+              return (locationsTree, locationsLookupMap);
+            },
+          );
 
   bool addToLocationTree(
     Map<String, dynamic> locationToAdd,
     MultiChildResource currentLocationNode,
+    SplayTreeMap<String, MultiChildResource> locationLookupMap,
   ) {
     if (currentLocationNode.id == locationToAdd['parentId']) {
-      currentLocationNode.children.add(
-        MultiChildResource.fromJson(
-            locationToAdd, MultiChildResourceType.location),
+      final locationNode = MultiChildResource.fromJson(
+        locationToAdd,
+        MultiChildResourceType.location,
       );
+      currentLocationNode.children.add(
+        locationNode,
+      );
+      locationLookupMap[locationNode.id] = locationNode;
       return true;
     } else {
       for (var child in currentLocationNode.children) {
-        if (addToLocationTree(locationToAdd, child as MultiChildResource)) {
+        if (addToLocationTree(
+            locationToAdd, child as MultiChildResource, locationLookupMap)) {
           return true;
         }
       }
@@ -82,80 +101,54 @@ class MyRepository {
 
   Future<List<CompanyResource>> getAssetsTree(String companyId) =>
       getLocations(companyId).then(
-        (locationsTree) => _myRDS.getAssets(companyId).then(
+        (record) => _myRDS.getAssets(companyId).then(
           (assets) {
+            final (locationsTree, multiChildLookupMap) = record;
             final assetsMap = assets
                 .map((location) => location as Map<String, dynamic>)
                 .toList();
 
-            while (assetsMap.isNotEmpty) {
-              final insertedAssets = <String>[];
-              for (var asset in assetsMap) {
-                if (asset['parentId'] == null && asset['locationId'] == null) {
-                  try {
-                    locationsTree.add(
-                      ComponentResource.fromJson(asset),
-                    );
-                  } catch (_) {
-                    // Empty catch cause in some cases the asset doesn't have a
-                    // sensorType neither parentId or locationId.
-                  }
-                  insertedAssets.add(asset['id'] as String);
-                } else {
-                  var currentIndex = 0;
-                  var hasInserted = false;
-                  while (currentIndex < locationsTree.length && !hasInserted) {
-                    hasInserted = addAssetToTree(
-                      asset,
-                      locationsTree[currentIndex],
-                    );
-                    currentIndex++;
-                  }
-                  if (hasInserted) {
-                    insertedAssets.add(asset['id'] as String);
-                  }
+            assetsMap.sort((a, b) => a['sensorType'] == null ? -1 : 1);
+
+            for (var asset in assetsMap) {
+              if (asset['parentId'] == null && asset['locationId'] == null) {
+                try {
+                  locationsTree.add(
+                    ComponentResource.fromJson(asset),
+                  );
+                } catch (_) {
+                  // Empty catch cause in some cases the asset doesn't have a
+                  // sensorType neither parentId or locationId.
+                }
+              } else if ((asset['parentId'] != null ||
+                      asset['locationId'] != null) &&
+                  asset['sensorType'] != null) {
+                final parent = asset['parentId'] != null
+                    ? multiChildLookupMap[asset['parentId']]
+                    : multiChildLookupMap[asset['locationId']];
+                if (parent != null) {
+                  parent.children.add(
+                    ComponentResource.fromJson(asset),
+                  );
+                }
+              } else {
+                final parent = asset['parentId'] != null
+                    ? multiChildLookupMap[asset['parentId']]
+                    : multiChildLookupMap[asset['locationId']];
+                if (parent != null) {
+                  final assetNode = MultiChildResource.fromJson(
+                    asset,
+                    MultiChildResourceType.asset,
+                  );
+                  parent.children.add(
+                    assetNode,
+                  );
+                  multiChildLookupMap[assetNode.id] = assetNode;
                 }
               }
-              assetsMap.removeWhere(
-                (location) => insertedAssets.contains(
-                  location['id'],
-                ),
-              );
             }
-
             return locationsTree;
           },
         ),
       );
-
-  bool addAssetToTree(
-    Map<String, dynamic> assetToAdd,
-    CompanyResource currentResourceNode,
-  ) {
-    if ((currentResourceNode.id == assetToAdd['parentId'] ||
-            currentResourceNode.id == assetToAdd['locationId']) &&
-        assetToAdd['sensorType'] != null) {
-      (currentResourceNode as MultiChildResource).children.add(
-            ComponentResource.fromJson(assetToAdd),
-          );
-      return true;
-    }
-    if ((assetToAdd['locationId'] == currentResourceNode.id ||
-            assetToAdd['parentId'] == currentResourceNode.id) &&
-        assetToAdd['sensorId'] == null) {
-      (currentResourceNode as MultiChildResource).children.add(
-            MultiChildResource.fromJson(
-                assetToAdd, MultiChildResourceType.asset),
-          );
-      return true;
-    }
-    if (currentResourceNode is MultiChildResource) {
-      for (var child in currentResourceNode.children) {
-        if (addAssetToTree(assetToAdd, child)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
 }
