@@ -1,0 +1,11 @@
+{
+  "@@locale": "pt_BR",
+  "appName": "Tractian",
+  "errorGenericMessage": "Ocorreu um erro.\n Tente novamente.",
+  "errorConnectionMessage": "Erro de conexão.\n Verifique sua conexão com a internet.",
+  "errorTryAgainButton": "Tentar novamente",
+  "assetsPageTitle": "Assets",
+  "textFieldHint": "Busque ativo ou local",
+  "energyFilter": "Sensor de Energia",
+  "criticalFilter": "Crítico"
+}

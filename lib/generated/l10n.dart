@@ -60,20 +60,30 @@ class S {
     );
   }
 
-  /// `An error occurred while loading the page.\n Please try again.`
-  String get errorMessage {
+  /// `Ocorreu um erro.\n Tente novamente.`
+  String get errorGenericMessage {
     return Intl.message(
-      'An error occurred while loading the page.\n Please try again.',
-      name: 'errorMessage',
+      'Ocorreu um erro.\n Tente novamente.',
+      name: 'errorGenericMessage',
       desc: '',
       args: [],
     );
   }
 
-  /// `Try Again`
+  /// `Erro de conexão.\n Verifique sua conexão com a internet.`
+  String get errorConnectionMessage {
+    return Intl.message(
+      'Erro de conexão.\n Verifique sua conexão com a internet.',
+      name: 'errorConnectionMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tentar novamente`
   String get errorTryAgainButton {
     return Intl.message(
-      'Try Again',
+      'Tentar novamente',
       name: 'errorTryAgainButton',
       desc: '',
       args: [],
@@ -126,7 +136,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
 
   List<Locale> get supportedLocales {
     return const <Locale>[
-      Locale.fromSubtags(languageCode: 'en', countryCode: 'US'),
+      Locale.fromSubtags(languageCode: 'pt', countryCode: 'BR'),
     ];
   }
 

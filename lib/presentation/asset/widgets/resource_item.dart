@@ -87,15 +87,32 @@ class ResourceItem extends StatelessWidget {
               ],
             ),
           ),
-          if (resource is MultiChildResource && isExpanded)
-            ...(resource as MultiChildResource).children.map(
-                  (child) => ResourceItem(
-                    layerPadding: layerPadding + _defaultLayerPadding,
-                    resource: child,
-                    onExpandPressed: onExpandPressed,
-                    expandedResources: expandedResources,
-                  ),
-                ),
+          AnimatedSwitcher(
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: SizeTransition(
+                axisAlignment: 1,
+                sizeFactor: animation,
+                child: child,
+              ),
+            ),
+            duration: const Duration(milliseconds: 300),
+            child: resource is MultiChildResource && isExpanded
+                ? Column(
+                    children: (resource as MultiChildResource)
+                        .children
+                        .map(
+                          (child) => ResourceItem(
+                            layerPadding: layerPadding + _defaultLayerPadding,
+                            resource: child,
+                            onExpandPressed: onExpandPressed,
+                            expandedResources: expandedResources,
+                          ),
+                        )
+                        .toList(),
+                  )
+                : const SizedBox.shrink(),
+          ),
         ],
       ),
     );

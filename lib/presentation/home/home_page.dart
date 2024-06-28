@@ -2,6 +2,7 @@ import 'package:assets_manager/common/routing/route_paths.dart';
 import 'package:assets_manager/common/util.dart';
 import 'package:assets_manager/data/repository/my_repository.dart';
 import 'package:assets_manager/generated/l10n.dart';
+import 'package:assets_manager/presentation/common/error_page.dart';
 import 'package:assets_manager/presentation/common/my_app_bar.dart';
 import 'package:assets_manager/presentation/home/home_bloc.dart';
 import 'package:flutter/material.dart';
@@ -66,15 +67,11 @@ class HomePage extends StatelessWidget {
                       )
                       .toList(),
                 ),
-              Error() => Center(
-                  child: InkWell(
-                    onTap: () => context.read<HomeBloc>().add(
-                          GetCompanies(),
-                        ),
-                    child: Text(
-                      S.of(context).errorTryAgainButton,
-                    ),
-                  ),
+              Error() => ErrorPage(
+                  exception: state.exception,
+                  onRetry: () => context.read<HomeBloc>().add(
+                        GetCompanies(),
+                      ),
                 ),
             },
           ),

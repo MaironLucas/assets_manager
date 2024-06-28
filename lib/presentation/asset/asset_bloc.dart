@@ -1,3 +1,4 @@
+import 'package:assets_manager/data/exceptions.dart';
 import 'package:assets_manager/data/model/company_resources.dart';
 import 'package:assets_manager/data/repository/my_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +17,11 @@ class Success extends AssetState {
   final FilterType? currentFilter;
 }
 
-class Error extends AssetState {}
+class Error extends AssetState {
+  Error(this.exception);
+
+  final MyException exception;
+}
 
 sealed class AssetEvent {}
 
@@ -68,8 +73,8 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
       _allResources = resources;
       _filteredResources = List.from(resources);
       emit(Success(_filteredResources, _expandedResources, _currentFilter));
-    } catch (_) {
-      emit(Error());
+    } catch (exception) {
+      emit(Error(exception is MyException ? exception : GenericException()));
     }
   }
 
@@ -161,8 +166,8 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
         _ => true,
       };
       if (((currentNode.name.toLowerCase().contains(searchTerm) &&
-          searchTerm.isNotEmpty) ||
-          searchTerm.isEmpty) &&
+                  searchTerm.isNotEmpty) ||
+              searchTerm.isEmpty) &&
           matchFilter) {
         return true;
       } else {
