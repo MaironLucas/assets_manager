@@ -1,16 +1,12 @@
-# assets_manager
+# Asset Manager
 
-A new Flutter project.
+A app based to fit the Tractian Mobile challenge.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## What would I improve if I had more time?
+- Refine all the code in the repository to improve performance and readability. Maybe the first 
+thing I would do is sort the response obtained from the /assets endpoint in some way, so the 
+recursive method could find its parent more easily.
+- Implement a caching system to store the assets tree. I could probably use a package like Hive for this.
+- Refine the app theme system to configure all colors and text styles in a single place.
+- Implement all parts of Clean Architecture. To reduce development time, I omitted the domain layer 
+and used only a repository to handle the data.
